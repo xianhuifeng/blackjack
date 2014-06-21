@@ -8,13 +8,15 @@ class window.AppView extends Backbone.View
 
   events:
     "click .hit-button": -> @model.get('playerHand').hit()
-    "click .stand-button": -> @model.get('playerHand').stand()
-    "click .stand-button": -> @model.get('dealerHand').hit()
+    "click .stand-button": -> @stander @
+    #"click .stand-button": -> @model.get('dealerHand').hit()
 
   initialize: ->
     @render()
     #add listener for busted cgtest
-    @model.get('playerHand').on 'busted', => @disableHit @
+    @model.on 'busted', => @disableHit("YOU HELLA BUSTED")
+    @model.on 'dealerWins', => @dealerWins @
+    @model.on 'dealerBusted', => @dealerBusted @
 
 
   render: ->
@@ -23,8 +25,22 @@ class window.AppView extends Backbone.View
     @$('.player-hand-container').html new HandView(collection: @model.get 'playerHand').el
     @$('.dealer-hand-container').html new HandView(collection: @model.get 'dealerHand').el
 
-  disableHit: ->
+  disableHit: (message)->
     #disable style setting on hit button cg test
     #alert 'hey'
     $(".hit-button").attr "disabled", "disabled"
-    $(".result").text "YOU HELLA BUSTED!!"
+    $(".result").text message
+
+  stander: ->
+    @disableHit("Standing...")
+    @model.get('dealerHand').hit()
+
+  dealerWins: ->
+    alert('dealer wins...  boo')
+    #@$el.empty()
+    @model.initialize()
+    @render()
+
+  dealerBusted: ->
+    alert('you win - dealer busted!')
+    @render()

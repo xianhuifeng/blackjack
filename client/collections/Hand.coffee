@@ -2,17 +2,14 @@ class window.Hand extends Backbone.Collection
 
   model: Card
 
-  initialize: (array, @deck, @isDealer, @currentScore = 0) ->
+  initialize: (array, @deck, @isDealer) ->
 
   hit: ->
-    if @isDealer is true then @at(0).flip()
+    #if @isDealer is true then @at(0).flip()
     @add(@deck.pop()).last()
-    console.log "hit calling" ,@
 
   stand: ->
     console.log "stand calling"
-    #console.log(@at(0))
-
 
 
 
@@ -26,24 +23,20 @@ class window.Hand extends Backbone.Collection
     score = @reduce (score, card) ->
       score + if card.get 'revealed' then card.get 'value' else 0
     , 0
-    #trigger "busted"  if score > 21
     if hasAce
-      @bigScore [score, score + 10]
       [score, score + 10]
     else
-      @bigScore [score]
       [score]
 
+  bestScore: ->
+    scoreArr = do @scores
+    if scoreArr.length is 1
+      scoreArr[0]
+    else
+      if scoreArr[1] > 21
+        scoreArr[0]
+      else scoreArr[1]
 
-  bigScore: (score) ->
-    console.log 'called big score', score, @
-    #if dealer
-
-
-    #if player
-    if score[0] > 21 then @trigger "busted", @
-    @currentScore = score[0]
-    #@trigger "u"
 
 
 
